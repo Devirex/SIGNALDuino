@@ -591,12 +591,22 @@ inline void ethernetEvent()
   if (Server.hasClient()) {
     if (!serverClient || !serverClient.connected()) {
       if (serverClient) serverClient.stop();
+#ifdef ESP32
       serverClient = Server.accept();
+#else
+      serverClient = Server.available();      
+#endif      
       serverClient.flush();
       //DBG_PRINTLN("New client: ");
       //DBG_PRINTLN(serverClient.remoteIP());
     } else {
+#ifdef ESP32
       WiFiClient rejectClient = Server.accept();
+#else
+      WiFiClient rejectClient = Server.available();
+#endif      
+
+
       rejectClient.stop();
       //DBG_PRINTLN("Reject new Client: ");
       //DBG_PRINTLN(rejectClient.remoteIP());
