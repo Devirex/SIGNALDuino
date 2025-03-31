@@ -121,10 +121,10 @@ void send_cmd()
 
 	uint8_t cmdNo = 255;
 
-	char buf[256] = {}; // Second Buffer 256 Bytes 0-255
+	char buf[300] = {}; // Second Buffer 256 Bytes 0-255
 	char *msg_beginptr = IB_1;
 	char *msg_endptr = buf;
-	uint8_t buffer_left = 255;
+	uint16_t buffer_left = 299;
 	do
 	{
 
@@ -193,7 +193,7 @@ void send_cmd()
 		}
 		else if (msg_beginptr[0] == 'D' && msg_beginptr[1] == '=') {
 		command[cmdNo].datastart = msg_beginptr + 2;
-		command[cmdNo].dataend = msg_endptr = (char*)memchr(msg_beginptr + 3, ';', buf + 255 - msg_beginptr + 3);
+		command[cmdNo].dataend = msg_endptr = (char*)memchr(msg_beginptr + 3, ';', buf + 299 - msg_beginptr + 3);
 		//if (command[cmdNo].dataend != NULL) command[cmdNo].dataend= command[cmdNo].dataend-1;
 		DBG_PRINT(F("locating data start:"));
 		DBG_PRINT(command[cmdNo].datastart);
@@ -257,7 +257,7 @@ void send_cmd()
 			if (buffer_left == 0)
 			{
 				delayMicroseconds(300);
-				MSG_PRINTER.readBytesUntil('\n', buf, 255);
+				MSG_PRINTER.readBytesUntil('\n', buf, 299);
 				MSG_PRINT(FPSTR(TXT_SENDCMD));
 				MSG_PRINTLN(FPSTR(TXT_TOLONG));
 				return;

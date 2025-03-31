@@ -74,7 +74,7 @@ SimpleFIFO<int, FIFO_LENGTH> FiFo; //store FIFO_LENGTH # ints
 #define WIFI_MANAGER_OVERRIDE_STRINGS
 #include "wifi-config.h"
 #include "WiFiManager.h"           // https://github.com/tzapu/WiFiManager
-
+#include "ArduinoOTA.h"
 
 WiFiServer Server(23);             //  port 23 = telnet
 WiFiClient serverClient;
@@ -144,6 +144,26 @@ void setup() {
   while (!Serial) {
     delay(90); // wait for serial port to connect. Needed for native USB
   }
+  ArduinoOTA.setHostname("fesp");
+  ArduinoOTA.setPassword((const char *)"1107");
+  ArduinoOTA.onStart([]() {
+    Serial.println("Start");
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+  });
+  ArduinoOTA.begin();
   //char cfg_ipmode[7] = "dhcp";
   //Server.setNoDelay(true);
 #if defined(ESP8266)
@@ -160,6 +180,7 @@ void setup() {
     Server.stop();
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(event.reason);
+    restart();
   });
   // added @Dattel #130 - END
 #elif defined(ESP32)
@@ -172,7 +193,7 @@ void setup() {
     Server.stop();  // end telnet server
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(info.wps_fail_reason);
-    
+    restart();
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 #endif
 
@@ -501,7 +522,8 @@ void IRAM_ATTR cronjob(void *pArg) {
 
 void loop() {
   wifiManager.process();
-
+  ArduinoOTA.handle();
+  
   static int aktVal = 0;
   bool state;
   serialEvent();
