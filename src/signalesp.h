@@ -180,7 +180,7 @@ void setup() {
     Server.stop();
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(event.reason);
-    restart();
+    //restart();
   });
   // added @Dattel #130 - END
 #elif defined(ESP32)
@@ -193,7 +193,7 @@ void setup() {
     Server.stop();  // end telnet server
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(info.wps_fail_reason);
-    restart();
+    //restart();
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 #endif
 
@@ -625,21 +625,26 @@ inline void ethernetEvent()
       if (serverClient) serverClient.stop();
       serverClient = Server.accept();
       serverClient.flush();
-      //DBG_PRINTLN("New client: ");
-      //DBG_PRINTLN(serverClient.remoteIP());
+      DBG_PRINTLN("New client: ");
+      DBG_PRINTLN(serverClient.remoteIP());
     } else {
       WiFiClient rejectClient = Server.accept();
       rejectClient.stop();
-      //DBG_PRINTLN("Reject new Client: ");
-      //DBG_PRINTLN(rejectClient.remoteIP());
+      DBG_PRINTLN("Reject new Client: ");
+      DBG_PRINTLN(rejectClient.remoteIP());
     }
   }
 
   if(serverClient && !serverClient.connected())
   {
-    //DBG_PRINTLN("Client disconnected: ");
-    //DBG_PRINTLN(serverClient.remoteIP());
+    DBG_PRINTLN("Client disconnected: ");
+    DBG_PRINTLN(serverClient.connected());
+    DBG_PRINTLN(serverClient);
     serverClient.stop();
+    if(serverClient){
+      DBG_PRINTLN("Client not disconnected, resetting client: ");
+      serverClient = WiFiClient();
+    }
   }
 }
 

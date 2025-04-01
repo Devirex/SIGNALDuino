@@ -481,7 +481,7 @@
                 ]
             },
             "defines": [
-                "PROGVERS=\"4.0.0-1-g1744+250331\"",
+                "PROGVERS=\"4.0.0-3-gca21+250401\"",
                 "PLATFORMIO=60118",
                 "ARDUINO_NodeMCU_32S",
                 "HAVE_CONFIG_H",
