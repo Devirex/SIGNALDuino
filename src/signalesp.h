@@ -170,6 +170,13 @@ void setup() {
   gotIpEventHandler = WiFi.onStationModeGotIP([](const WiFiEventStationModeGotIP& event)
   {
     //Server.stop();
+    Serial.print("WiFi connected. IP address: ");
+    Serial.println(WiFi.localIP());
+    IPAddress localIP = WiFi.localIP();
+    String ipString = localIP.toString();
+    if (!ipString.startsWith("192.168.")) {
+      restart();
+    }
     Server.begin();  // start telnet server
     Server.setNoDelay(true);
   });
@@ -641,10 +648,7 @@ inline void ethernetEvent()
     DBG_PRINTLN(serverClient.connected());
     DBG_PRINTLN(serverClient);
     serverClient.stop();
-    if(serverClient){
-      DBG_PRINTLN("Client not disconnected, resetting client: ");
-      serverClient = WiFiClient();
-    }
+    restart();
   }
 }
 

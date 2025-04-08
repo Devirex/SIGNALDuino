@@ -8,7 +8,7 @@
  * file output.h worked with DEBUG variable
  */
 
-//#define DEBUG 0
+#define DEBUG 0
 
 /*
  * END debug options selection
